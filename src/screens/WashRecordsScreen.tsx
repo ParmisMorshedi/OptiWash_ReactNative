@@ -1,15 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { 
+  View,
+   Text,
+    FlatList, 
+    StyleSheet, 
+    TouchableOpacity,
+    ActivityIndicator 
+  } from 'react-native';
 import { WashRecord, WashStatus  } from '../models/WashRecord';
 import API_URL from '../../config';
+import { useFocusEffect , useNavigation } from '@react-navigation/native';
+import 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+
 
 const WashRecordsScreen = () => {
   const [records, setRecords] = useState<WashRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation<any>();
 
-  useEffect(() => {
-    fetchWashRecords();
-  }, []);
+
 
   const fetchWashRecords = async () => {
     try {
@@ -23,7 +33,12 @@ const WashRecordsScreen = () => {
       setLoading(false);
     }
   };
-
+ // Hämtar bilar vid fokusering på skärmen
+  useFocusEffect(
+    useCallback(() => {
+      fetchWashRecords();
+    }, [])
+  );
   const renderItem = ({ item }: { item: WashRecord }) => (
       <View style={styles.card}>
       <Text style={styles.text}>🧼 Car : {item.carPlateNumber || 'Okänd'}</Text>
@@ -45,6 +60,11 @@ const WashRecordsScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Wash Records</Text>
+       <TouchableOpacity
+            style={styles.addButton}      
+            onPress={() => navigation.navigate('AddWashRecord')}      >
+            <Text style={styles.navigateButtonText}>Lägg till ny tvätt</Text>
+      </TouchableOpacity>
       <FlatList
         data={records}
         keyExtractor={(item) => item.id.toString()}
@@ -77,5 +97,24 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  navigateButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  addButton: {
+    backgroundColor: '#4CAF50',  
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginBottom: 10,  
+    alignSelf: 'flex-end', 
+  },
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    // textAlign: 'center',
+    fontSize: 15, 
   },
 });

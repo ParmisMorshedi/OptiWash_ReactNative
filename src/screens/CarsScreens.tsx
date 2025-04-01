@@ -1,18 +1,24 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { View, 
+  Text,
+   FlatList,
+    ActivityIndicator,
+     StyleSheet,
+      TouchableOpacity,
+       Alert 
+      } from 'react-native';
+import { useFocusEffect , useNavigation } from '@react-navigation/native';
 import 'react-native-gesture-handler';
-
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-
 import API_URL from '../../config';
 import { Car } from '../models/Car';
 
 const CarsScreen = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation<any>();
 
-  // Hämtar bilar
+  // Get Car
   const fetchCars = async () => {
     setLoading(true);
     try {
@@ -64,18 +70,30 @@ const CarsScreen = () => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
+  
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Car List</Text>
+      <Text style={styles.title}>Bil listor</Text>
+
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddCar')}      >
+        <Text style={styles.addButtonText}>+ Lägg till ny bil</Text>
+      </TouchableOpacity>
+
       <FlatList
         data={cars}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Swipeable renderRightActions={() => renderRightActions(item.id)}>
-            <View style={styles.card}>
-              <Text style={styles.text}>🚗 Plate: {item.plateNumber}</Text>
-              <Text style={styles.text}>📸 Scanned: {item.scannedLicensePlate || 'N/A'}</Text>
-            </View>
+            <TouchableOpacity
+        onPress={() => navigation.navigate('AddWashRecord', { carId: item.id })} 
+        style={styles.card}
+      >
+        <Text style={styles.text}>🚗 Plate: {item.plateNumber}</Text>
+        <Text style={styles.text}>📸 Scanned: {item.scannedLicensePlate || 'N/A'}</Text>
+      </TouchableOpacity>
+
           </Swipeable>
         )}
       />
@@ -86,30 +104,55 @@ const CarsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+     padding: 20,
+      backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 22,
+     fontWeight: 'bold',
+  },
+  addButton: {
+    backgroundColor: '#4CAF50',  
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginBottom: 10,  
+    alignSelf: 'flex-end', 
+  },
+  addButtonText: {
+    color: 'white',
     fontWeight: 'bold',
-    marginBottom: 10,
+    // textAlign: 'center',
+    fontSize: 15, 
   },
   card: {
     backgroundColor: 'white',
-    padding: 15,
-    marginVertical: 8,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
+     padding: 15,
+      marginVertical: 8, 
+      borderRadius: 8,
+      shadowColor: '#000',
+      shadowOpacity: 0.2,
+      shadowRadius: 5, 
+      elevation: 3,
   },
+
   text: {
     fontSize: 16,
   },
+  navigateButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  navigateButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   actionButtons: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 10,
