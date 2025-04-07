@@ -1,16 +1,19 @@
-// import React from 'react';
-// import AddWashRecordScreen from '../screens/AddWashRecordScreen';
-// import { RouteProp, useRoute } from '@react-navigation/native';
-// import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React from 'react';
+import AddWashRecordScreen from './AddWashRecordScreen';
+import { useRoute } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 
-// type AddWashRecordFromCarScreenRouteProp = RouteProp<{ NewAddWashRecord: { carId: number } }, 'NewAddWashRecord'>;
-// type AddWashRecordFromCarScreenNavigationProp = NativeStackNavigationProp<{ NewAddWashRecord: { carId: number } }, 'NewAddWashRecord'>;
+type RouteParams = {
+  NewAddWashRecord: {
+    carId: number;
+  };
+};
 
-// const AddWashRecordFromCarScreen = () => {
-//   const route = useRoute<AddWashRecordFromCarScreenRouteProp>(); 
-//   const { carId } = route.params; 
+const AddWashRecordFromCarScreen = () => {
+  const route = useRoute<RouteProp<RouteParams, 'NewAddWashRecord'>>();
+  const { carId } = route.params;
 
-//   return <AddWashRecordScreen carId={carId} />;
-// };
+  return <AddWashRecordScreen carId={carId} />;
+};
 
-// export default AddWashRecordFromCarScreen;
+export default AddWashRecordFromCarScreen;

@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Switch, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -8,11 +10,13 @@ import API_URL from '../../config';
 import { Car } from '../models/Car';
 
 
+type Props = {
+  carId?: number; // nullable
+};
 
-
-const AddWashRecordScreen = () => {
+const AddWashRecordScreen = ({ carId }: Props) => {
   const [cars, setCars] = useState<Car[]>([]);
-  const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
+  const [selectedCarId, setSelectedCarId] = useState<number | null>(carId ?? null);
   const [washDate, setWashDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [interior, setInterior] = useState(false);
@@ -42,6 +46,7 @@ const onChangeDate = (event: any, selectedDate?: Date) => {
     };
     fetchCars();
   }, []);
+  const selectedCarPlate = cars.find(car => car.id === selectedCarId)?.plateNumber;
 
   const handleSubmit = async () => {
     if (!selectedCarId) {
@@ -87,6 +92,11 @@ const onChangeDate = (event: any, selectedDate?: Date) => {
       <Text style={styles.title}>Lägg till tvätt</Text>
 
       <Text style={styles.label}>Välj bil</Text>
+      {carId ? (
+    <View style={styles.input}>
+      <Text>{selectedCarPlate ?? 'Laddar...'}</Text>
+    </View>
+  ) : (
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={selectedCarId}
@@ -98,7 +108,7 @@ const onChangeDate = (event: any, selectedDate?: Date) => {
           ))}
         </Picker>
       </View>
-
+  )}
       <View style={styles.switchRow}>
         <Text style={styles.label}>Invändig tvätt</Text>
         <Switch value={interior} onValueChange={setInterior} />

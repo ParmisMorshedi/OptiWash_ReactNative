@@ -2,7 +2,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CarsScreen from '../screens/CarsScreens';
 import AddCarScreen from '../screens/AddCarsScreens';
-import AddWashRecordScreen from '../screens/AddWashRecordScreen';
+import AddWashRecordFromCarScreen from '../screens/AddWashRecordFromCarScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -11,8 +11,8 @@ export default function CarsStack() {
     <Stack.Navigator>
       <Stack.Screen name="CarsList" component={CarsScreen} />
       <Stack.Screen name="AddCar" component={AddCarScreen} />
-      <Stack.Screen name="AddWashRecord" component={AddWashRecordScreen} />
-    </Stack.Navigator>
+      <Stack.Screen name="AddWashRecord" component={AddWashRecordFromCarScreen} />
+      </Stack.Navigator>
   );
 }
 
