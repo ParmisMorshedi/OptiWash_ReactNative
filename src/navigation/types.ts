@@ -8,3 +8,11 @@ export type RootStackParamList = {
     };
   };
   
+
+  export type CarsStackParamList = {
+    CarsList: { updated?: boolean }; 
+    AddCar: undefined;
+    EditCar: { carId: number };
+    AddWashRecord: { carId: number };
+  };
+  

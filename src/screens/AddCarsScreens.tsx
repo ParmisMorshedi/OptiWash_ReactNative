@@ -1,10 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import API_URL from '../../config';
+import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 
-const AddCarScreen = ({ navigation }: { navigation: any }) => {
+
+
+type RouteParams = {
+  AddCar: {
+    carId?: number;
+  };
+};
+
+const AddCarScreen = () => {
+  const navigation = useNavigation<any>();
+  const route = useRoute<RouteProp<RouteParams, 'AddCar'>>();
+  const { carId } = route.params || {};
+
   const [plateNumber, setPlateNumber] = useState('');
   const [scannedLicensePlate, setScannedLicensePlate] = useState('');
+  const isEditing = !!carId;
+
+
+  const carData = {
+    id: carId,
+    plateNumber,
+    scannedLicensePlate: scannedLicensePlate || null,
+  };
+  
+
+  useEffect(() => {
+    if (carId) {
+      const fetchCar = async () => {
+        try {
+          const res = await fetch(`${API_URL}/Cars/${carId}`);
+          const data = await res.json();
+          setPlateNumber(data.plateNumber);
+          setScannedLicensePlate(data.scannedLicensePlate || '');
+        } catch (error) {
+          console.error(error);
+          Alert.alert('Fel', 'Kunde inte hämta bilens data.');
+        }
+      };
+      fetchCar();
+    }
+  }, [carId]);
+
 
   const handleAddCar = async () => {
     if (!plateNumber) {
@@ -18,24 +58,29 @@ const AddCarScreen = ({ navigation }: { navigation: any }) => {
       washHistory: null,
     };
 
-    try {
-      const response = await fetch(`${API_URL}/Cars`, {
-        method: 'POST',
+    const url = carId ? `${API_URL}/Cars/${carId}` : `${API_URL}/Cars`;
+    const method = carId ? 'PUT' : 'POST';
+
+     try {
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newCar),
+        body: JSON.stringify(carData),
       });
 
-      if (!response.ok) throw new Error('Misslyckades att lägga till bilen');
 
-      Alert.alert('✅ Lyckades', 'Bilen har lagts till!');
-      navigation.goBack(); // Gå tillbaka till föregående skärm
+      if (!res.ok) throw new Error('Misslyckades att spara bilen');
+
+      Alert.alert('✅ Klart', carId ? 'Bilen uppdaterades!' : 'Ny bil tillagd!');
+      navigation.goBack();
     } catch (error) {
       console.error(error);
       Alert.alert('❌ Fel', 'Något gick fel, försök igen.');
     }
   };
+
 
   return (
     <View style={styles.container}>

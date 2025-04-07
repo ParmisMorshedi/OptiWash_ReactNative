@@ -12,10 +12,15 @@ import 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import API_URL from '../../config';
 import { Car } from '../models/Car';
+import DeleteCarModal from './DeleteCarModal';
 
 const CarsScreen = () => {
   const [cars, setCars] = useState<Car[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
+  const [selectedPlate, setSelectedPlate] = useState('');
+
   const navigation = useNavigation<any>();
 
   // Get Car
@@ -34,50 +39,51 @@ const CarsScreen = () => {
     }
   };
 
-  // Hämtar bilar vid fokusering på skärmen
-  useFocusEffect(
-    useCallback(() => {
-      fetchCars();
-    }, [])
-  );
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchCars(); 
+    });
+  
+    return unsubscribe; 
+  }, [navigation]);
 
   // Tar bort bil
-  const deleteCar = async (id: number) => {
-    try {
-      const response = await fetch(`${API_URL}/Cars/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Failed to delete car');
-      setCars((prevCars) => prevCars.filter(car => car.id !== id));
-      Alert.alert('Bilen är borttagen!');
-    } catch (error) {
-      console.error('Error deleting car:', error);
-      Alert.alert('Fel', 'Misslyckades att ta bort bilen.');
-    }
+const openDeleteModal = (id: number, plate: string) => {
+    setSelectedCarId(id);
+    setSelectedPlate(plate);
+    setShowDeleteModal(true);
   };
 
-  // Renderar åtgärdsknappar (redigera & ta bort)
-  const renderRightActions = (id: number) => (
+  const renderRightActions = (item: Car) => (
     <View style={styles.actionButtons}>
-      <TouchableOpacity style={styles.editButton} onPress={() => Alert.alert('Redigera bilen', `ID: ${id}`)}>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => navigation.navigate('EditCar', { carId: item.id })}
+      >
         <Text style={styles.actionText}>✏️ Redigera</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.deleteButton} onPress={() => deleteCar(id)}>
+
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => openDeleteModal(item.id, item.plateNumber)}
+      >
         <Text style={styles.actionText}>🗑 Ta bort</Text>
       </TouchableOpacity>
     </View>
   );
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 100 }} />;
   }
 
-  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bil listor</Text>
 
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate('AddCar')}      >
+        onPress={() => navigation.navigate('AddCar')}
+      >
         <Text style={styles.addButtonText}>+ Lägg till ny bil</Text>
       </TouchableOpacity>
 
@@ -85,78 +91,74 @@ const CarsScreen = () => {
         data={cars}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+          <Swipeable renderRightActions={() => renderRightActions(item)}>
             <TouchableOpacity
-        onPress={() => navigation.navigate('AddWashRecord', { carId: item.id })} 
-        style={styles.card}
-      >
-        <Text style={styles.text}>🚗 Plate: {item.plateNumber}</Text>
-        <Text style={styles.text}>📸 Scanned: {item.scannedLicensePlate || 'N/A'}</Text>
-      </TouchableOpacity>
-
+              onPress={() => navigation.navigate('AddWashRecord', { carId: item.id })}
+              style={styles.card}
+            >
+              <Text style={styles.text}>🚗 Plate: {item.plateNumber}</Text>
+              <Text style={styles.text}>📸 Scanned: {item.scannedLicensePlate || 'N/A'}</Text>
+            </TouchableOpacity>
           </Swipeable>
         )}
       />
+
+      {selectedCarId !== null && (
+        <DeleteCarModal
+          visible={showDeleteModal}
+          carId={selectedCarId}
+          plateNumber={selectedPlate}
+          onClose={() => setShowDeleteModal(false)}
+          onDeleted={fetchCars}
+        />
+      )}
     </View>
   );
 };
 
+export default CarsScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-     padding: 20,
-      backgroundColor: '#f5f5f5',
+    padding: 20,
+    backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 22,
-     fontWeight: 'bold',
+    fontWeight: 'bold',
   },
   addButton: {
-    backgroundColor: '#4CAF50',  
+    backgroundColor: '#4CAF50',
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 8,
-    marginBottom: 10,  
-    alignSelf: 'flex-end', 
+    marginBottom: 10,
+    alignSelf: 'flex-end',
   },
   addButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    // textAlign: 'center',
-    fontSize: 15, 
+    fontSize: 15,
   },
   card: {
     backgroundColor: 'white',
-     padding: 15,
-      marginVertical: 8, 
-      borderRadius: 8,
-      shadowColor: '#000',
-      shadowOpacity: 0.2,
-      shadowRadius: 5, 
-      elevation: 3,
+    padding: 15,
+    marginVertical: 8,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
-
   text: {
     fontSize: 16,
   },
-  navigateButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  navigateButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   actionButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
     backgroundColor: '#f5f5f5',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   editButton: {
     backgroundColor: '#FFD700',
@@ -174,5 +176,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-export default CarsScreen;
