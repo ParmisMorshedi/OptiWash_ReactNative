@@ -71,7 +71,23 @@ const openDeleteModal = (id: number, plate: string) => {
       </TouchableOpacity>
     </View>
   );
-
+  const handleCarPress = async (carId: number) => {
+    try {
+      const res = await fetch(`${API_URL}/WashRecords/car/${carId}`);
+      const records = await res.json();
+  
+      if (Array.isArray(records) && records.length > 0) {
+        const latestRecord = records[records.length - 1];
+  
+        navigation.navigate('EditWashRecord', { washRecordId: latestRecord.id });
+      } else {
+        navigation.navigate('AddWashRecord', { carId });
+      }
+    } catch (err) {
+      console.error('❌ Error checking wash records:', err);
+      Alert.alert('Fel', 'Kunde inte hämta tvättinformation.');
+    }
+  };
   if (loading) {
     return <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 100 }} />;
   }
@@ -93,9 +109,9 @@ const openDeleteModal = (id: number, plate: string) => {
         renderItem={({ item }) => (
           <Swipeable renderRightActions={() => renderRightActions(item)}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('AddWashRecord', { carId: item.id })}
-              style={styles.card}
-            >
+            onPress={() => handleCarPress(item.id)}
+            style={styles.card}
+          >
               <Text style={styles.text}>🚗 Plate: {item.plateNumber}</Text>
               <Text style={styles.text}>📸 Scanned: {item.scannedLicensePlate || 'N/A'}</Text>
             </TouchableOpacity>

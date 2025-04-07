@@ -14,5 +14,13 @@ export type RootStackParamList = {
     AddCar: undefined;
     EditCar: { carId: number };
     AddWashRecord: { carId: number };
+    EditWashRecord: { washRecordId: number }; 
+  };
+
+  
+  export type WashStackParamList = {
+    WashRecords: undefined;
+    AddWashRecord: { carId?: number };
+    EditWashRecord: { washRecordId: number };
   };
   

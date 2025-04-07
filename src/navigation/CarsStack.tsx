@@ -5,6 +5,8 @@ import AddCarScreen from '../screens/AddCarsScreens';
 import AddWashRecordFromCarScreen from '../screens/AddWashRecordFromCarScreen';
 import EditCarScreen from '../screens/EditCarScreen';
 import { CarsStackParamList } from '../navigation/types'; 
+import EditWashRecordScreen from '../screens/EditWashRecordScreen';
+
 
 
 const Stack = createNativeStackNavigator<CarsStackParamList>();
@@ -16,6 +18,8 @@ export default function CarsStack() {
       <Stack.Screen name="AddCar" component={AddCarScreen} />
       <Stack.Screen name="EditCar" component={EditCarScreen} />
       <Stack.Screen name="AddWashRecord" component={AddWashRecordFromCarScreen} />
+      <Stack.Screen name="EditWashRecord" component={EditWashRecordScreen} />
+
       </Stack.Navigator>
   );
 }
