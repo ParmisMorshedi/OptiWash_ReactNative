@@ -7,10 +7,19 @@ import { OrganizationStackParamList } from '../navigation/OrganizationStack';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import API_URL from '../../config';
 import { Organization } from '../models/Organization';
+import AddCarToOrganizationModal from './AddCarToOrganizationModal';
+
 
 const OrganizationsScreen = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+  const [showAddCarModal, setShowAddCarModal] = useState(false);
+
+  const handleModalClose = () => {
+    setShowAddCarModal(false);
+    fetchOrganizations(); 
+  };
   const navigation = useNavigation<NativeStackNavigationProp<OrganizationStackParamList>>();
 
 
@@ -40,6 +49,10 @@ const OrganizationsScreen = () => {
         carPlateNumbers: item.carPlateNumbers,
       } as any)
     }
+    onLongPress={() => {
+      setSelectedOrg(item);
+      setShowAddCarModal(true);
+    }}
   >
     <View style={styles.card}>
       <Text style={styles.title}>{item.name}</Text>
@@ -61,6 +74,13 @@ const OrganizationsScreen = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
       />
+      {showAddCarModal && selectedOrg && (
+  <AddCarToOrganizationModal
+    visible={showAddCarModal}
+    onClose={handleModalClose}
+    organization={selectedOrg}
+  />
+)}
     </View>
   );
 };
