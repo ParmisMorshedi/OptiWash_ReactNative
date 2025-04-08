@@ -1,3 +1,5 @@
+//Type.ts
+
 export type RootStackParamList = {
     Home: undefined;
     Profile: undefined;
@@ -22,5 +24,14 @@ export type RootStackParamList = {
     WashRecords: undefined;
     AddWashRecord: { carId?: number };
     EditWashRecord: { washRecordId: number };
+  };
+  export type OrganizationStackParamList  = {
+    Organizations: undefined;
+    OrganizationDetails: {
+      id: number;
+      name: string;
+      carPlateNumbers: string[];
+    };
+    EditOrganization: { orgId: number }; 
   };
   

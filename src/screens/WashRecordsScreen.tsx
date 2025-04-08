@@ -5,7 +5,8 @@ import {
     FlatList, 
     StyleSheet, 
     TouchableOpacity,
-    ActivityIndicator 
+    ActivityIndicator,
+     Alert 
   } from 'react-native';
 import { WashRecord, WashStatus  } from '../models/WashRecord';
 import API_URL from '../../config';
@@ -39,19 +40,55 @@ const WashRecordsScreen = () => {
       fetchWashRecords();
     }, [])
   );
-  const renderItem = ({ item }: { item: WashRecord }) => (
-      <View style={styles.card}>
-      <Text style={styles.text}>🧼 Car : {item.carPlateNumber || 'Okänd'}</Text>
-      <Text style={styles.text}>📅 Date: {new Date(item.washDate).toLocaleDateString()}</Text>
-      <Text style={styles.text}>🧽 Interior: {item.interiorCleaned ? 'Yes' : 'No'}</Text>
-      <Text style={styles.text}>🚿 Exterior: {item.exteriorCleaned ? 'Yes' : 'No'}</Text>
-      {item.notes ? <Text style={styles.text}>📝 Notes: {item.notes}</Text> : null}
-      <Text style={styles.text}>
-  📌 Status: {item.status === 0 ? '⏳ Väntar' : item.status === 1 ? '✔️ Klar' : '❌ Misslyckades'}
-</Text>
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await fetch(`${API_URL}/WashRecords/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        Alert.alert('🗑 Raderad!', 'Tvätten togs bort.');
+        fetchWashRecords(); 
+      } else {
+        Alert.alert('Fel', 'Kunde inte ta bort tvätten.');
+      }
+    } catch (err) {
+      console.error('❌ Delete error:', err);
+      Alert.alert('Fel', 'Något gick fel vid borttagning.');
+    }
+  };
 
+  const renderRightActions = (item: WashRecord) => (
+    <View style={styles.actionButtons}>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => navigation.navigate('EditWashRecord', { washRecordId: item.id })}
+      >
+        <Text style={styles.actionText}>✏️ Redigera</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item.id)}
+      >
+        <Text style={styles.actionText}>🗑 Ta bort</Text>
+      </TouchableOpacity>
     </View>
   );
+  
+  const renderItem = ({ item }: { item: WashRecord }) => (
+    <Swipeable renderRightActions={() => renderRightActions(item)}>
+      <View style={styles.card}>
+        <Text style={styles.text}>🧼 Car : {item.carPlateNumber || 'Okänd'}</Text>
+        <Text style={styles.text}>📅 Date: {new Date(item.washDate).toLocaleDateString()}</Text>
+        <Text style={styles.text}>🧽 Interior: {item.interiorCleaned ? 'Yes' : 'No'}</Text>
+        <Text style={styles.text}>🚿 Exterior: {item.exteriorCleaned ? 'Yes' : 'No'}</Text>
+        {item.notes ? <Text style={styles.text}>📝 Notes: {item.notes}</Text> : null}
+        <Text style={styles.text}>
+          📌 Status: {item.status === 0 ? '⏳ Väntar' : item.status === 1 ? '✔️ Klar' : '❌ Misslyckades'}
+        </Text>
+      </View>
+    </Swipeable>
+  );
+  
 
   if (loading) {
     return <ActivityIndicator size="large" color="#007AFF" />;
@@ -82,6 +119,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f9f9f9',
   },
+  
   title: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -117,4 +155,26 @@ const styles = StyleSheet.create({
     // textAlign: 'center',
     fontSize: 15, 
   },
+  actionButtons: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  editButton: {
+    backgroundColor: '#FFD700',
+    padding: 15,
+    borderRadius: 5,
+    marginRight: 5,
+  },
+  deleteButton: {
+    backgroundColor: '#FF3B30',
+    padding: 15,
+    borderRadius: 5,
+  },
+  actionText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  
 });

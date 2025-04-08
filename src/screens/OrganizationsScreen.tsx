@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { TouchableOpacity, Alert } from 'react-native';
+import { useNavigation, useFocusEffect  } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { OrganizationStackParamList } from '../navigation/OrganizationStack'; 
@@ -8,9 +8,12 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-nativ
 import API_URL from '../../config';
 import { Organization } from '../models/Organization';
 import AddCarToOrganizationModal from './AddCarToOrganizationModal';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 
 const OrganizationsScreen = () => {
+  const openedRow = useRef<any>(null);
+  const swipeableRefs = useRef<{ [key: number]: any }>({});
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
@@ -22,12 +25,54 @@ const OrganizationsScreen = () => {
   };
   const navigation = useNavigation<NativeStackNavigationProp<OrganizationStackParamList>>();
 
-
+  useFocusEffect(
+    useCallback(() => {
+      if (openedRow.current) {
+        openedRow.current.close();
+      }
+      fetchOrganizations();
+    }, [])
+  );
+  
 
   useEffect(() => {
     fetchOrganizations();
   }, []);
 
+  const handleDeleteOrganization = async (id: number) => {
+    try {
+      const res = await fetch(`${API_URL}/Organizations/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        Alert.alert('🗑 Raderad!', 'Organisationen togs bort.');
+        fetchOrganizations(); 
+      } else {
+        Alert.alert('Fel', 'Kunde inte ta bort organisationen.');
+      }
+    } catch (err) {
+      console.error('❌ Delete error:', err);
+      Alert.alert('Fel', 'Något gick fel vid borttagning.');
+    }
+  };
+  
+  const renderRightActions = (item: Organization) => (
+    <View style={styles.actionButtons}>
+         <TouchableOpacity
+      style={styles.editButton}
+      onPress={() => navigation.navigate('EditOrganization', { orgId: item.id })}
+    >
+      <Text style={styles.actionText}>✏️ Redigera</Text>
+    </TouchableOpacity>
+      <TouchableOpacity
+      style={styles.deleteButton}
+      onPress={() => handleDeleteOrganization(item.id)}
+       >
+      <Text style={styles.actionText}>🗑 Ta bort</Text>
+      </TouchableOpacity>
+    </View>
+  );
+  
   const fetchOrganizations = async () => {
     try {
       const response = await fetch(`${API_URL}/Organizations`);
@@ -41,26 +86,40 @@ const OrganizationsScreen = () => {
   };
 
   const renderItem = ({ item }: { item: Organization }) => (
-    <TouchableOpacity
-    onPress={() =>
-      navigation.navigate('OrganizationDetails', {
-        id: item.id,
-        name: item.name,
-        carPlateNumbers: item.carPlateNumbers,
-      } as any)
-    }
-    onLongPress={() => {
-      setSelectedOrg(item);
-      setShowAddCarModal(true);
+    <Swipeable
+    renderRightActions={() => renderRightActions(item)}
+    onSwipeableOpen={() => {
+      if (openedRow.current && openedRow.current !== swipeableRefs.current[item.id]) {
+        openedRow.current.close();
+      }
+      openedRow.current = swipeableRefs.current[item.id];
+    }}
+    ref={(ref) => {
+      swipeableRefs.current[item.id] = ref;
     }}
   >
-    <View style={styles.card}>
-      <Text style={styles.title}>{item.name}</Text>
-      <Text>📍 {item.location}</Text>
-      <Text>🚗 Antal bilar: {item.carPlateNumbers.length}</Text>
-    </View>
+     <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('OrganizationDetails', {
+          id: item.id,
+          name: item.name,
+          carPlateNumbers: item.carPlateNumbers,
+        } as any)
+      }
+      onLongPress={() => {
+        setSelectedOrg(item);
+        setShowAddCarModal(true);
+      }}
+    >
+      <View style={styles.card}>
+        <Text style={styles.title}>{item.name}</Text>
+        <Text>📍 {item.location}</Text>
+        <Text>🚗 Antal bilar: {item.carPlateNumbers.length}</Text>
+      </View>
     </TouchableOpacity>
-  );
+  </Swipeable>
+);
+  
 
   if (loading) {
     return <ActivityIndicator size="large" color="#007AFF" />;
@@ -93,6 +152,10 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f5f5f5',
   },
+  cardContainer: {
+    marginBottom: 12,
+  },
+  
   header: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -109,4 +172,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  actionButtons: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  editButton: {
+    backgroundColor: '#FFD700',
+    padding: 15,
+    borderRadius: 5,
+    marginRight: 5,
+  },
+  deleteButton: {
+    backgroundColor: '#FF3B30',
+    padding: 15,
+    borderRadius: 5,
+  },
+  actionText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  
 });
