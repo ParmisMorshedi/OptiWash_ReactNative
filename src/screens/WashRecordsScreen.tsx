@@ -1,180 +1,176 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { 
-  View,
-   Text,
-    FlatList, 
-    StyleSheet, 
-    TouchableOpacity,
-    ActivityIndicator,
-     Alert 
-  } from 'react-native';
-import { WashRecord, WashStatus  } from '../models/WashRecord';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { useFocusEffect } from '@react-navigation/native';
 import API_URL from '../../config';
-import { useFocusEffect , useNavigation } from '@react-navigation/native';
-import 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { useNavigation } from '@react-navigation/native';
 
+type WashCar = {
+  plateNumber: string;
+  interior: boolean;
+  exterior: boolean;
+  status: string;
+  note?: string;
+};
 
-const WashRecordsScreen = () => {
-  const [records, setRecords] = useState<WashRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+type WashCompany = {
+  id: number;
+  name: string;
+  city: string;
+  cars: WashCar[];
+};
+
+const WashScheduleScreen = () => {
   const navigation = useNavigation<any>();
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
+  const [completed, setCompleted] = useState<WashCompany[]>([]);
+  const [notCompleted, setNotCompleted] = useState<WashCompany[]>([]);
+  const monthsList = generateMonths(12); 
 
-
-
-  const fetchWashRecords = async () => {
-    try {
-      const response = await fetch(`${API_URL}/WashRecords/all`);
-      const data = await response.json();
-      console.log('Fetched wash records:', data);
-      setRecords(data);
-    } catch (error) {
-      console.error('Failed to fetch wash records:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
- // Hämtar bilar vid fokusering på skärmen
   useFocusEffect(
-    useCallback(() => {
-      fetchWashRecords();
-    }, [])
+    React.useCallback(() => {
+      fetchData();
+    }, [selectedMonth])
   );
-  const handleDelete = async (id: number) => {
+
+  const fetchData = async () => {
     try {
-      const res = await fetch(`${API_URL}/WashRecords/${id}`, {
-        method: 'DELETE',
-      });
-      if (res.ok) {
-        Alert.alert('🗑 Raderad!', 'Tvätten togs bort.');
-        fetchWashRecords(); 
-      } else {
-        Alert.alert('Fel', 'Kunde inte ta bort tvätten.');
-      }
+      setCompleted([]);      
+      setNotCompleted([]);
+
+      const res = await fetch(`${API_URL}/WashRecords/monthly?month=${selectedMonth}`);
+      const data = await res.json();
+
+      console.log("📅 Month fetched:", selectedMonth, data);
+
+      setCompleted(data.completed);
+      setNotCompleted(data.notCompleted);
     } catch (err) {
-      console.error('❌ Delete error:', err);
-      Alert.alert('Fel', 'Något gick fel vid borttagning.');
+      console.log('Failed to load wash records:', err);
     }
   };
 
-  const renderRightActions = (item: WashRecord) => (
-    <View style={styles.actionButtons}>
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => navigation.navigate('EditWashRecord', { washRecordId: item.id })}
-      >
-        <Text style={styles.actionText}>✏️ Redigera</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => handleDelete(item.id)}
-      >
-        <Text style={styles.actionText}>🗑 Ta bort</Text>
+  const renderCarDetails = (car: WashCar, index: number) => (
+    <View style={styles.carDetails} key={`${car.plateNumber}_${index}`}>
+      <Text style={styles.carPlate}>🚗 {car.plateNumber}</Text>
+      <Text>
+        🧼 Typ: {car.interior ? 'Invändig' : ''}{car.interior && car.exterior ? ' & ' : ''}{car.exterior ? 'Utvändig' : ''}
+      </Text>
+      <Text>📌 Status: {car.status}</Text>
+      {car.note && <Text>📝 {car.note}</Text>}
+    </View>
+  );
+  
+  const renderCompany = (item: WashCompany, done: boolean = true) => (
+    <View style={styles.card}>      
+      <TouchableOpacity>        
+        <Text style={styles.companyName}>🏢 {item.name}</Text>
+        <Text>📍 {item.city}</Text>
+        <Text>🚗 {item.cars.length} bilar</Text>
+        {item.cars.map((car, index) => (
+        <View key={`${car.plateNumber}-${index}`}>
+          {renderCarDetails(car, index)}
+        </View>
+      ))}
+
+        
       </TouchableOpacity>
     </View>
   );
   
-  const renderItem = ({ item }: { item: WashRecord }) => (
-    <Swipeable renderRightActions={() => renderRightActions(item)}>
-      <View style={styles.card}>
-        <Text style={styles.text}>🧼 Car : {item.carPlateNumber || 'Okänd'}</Text>
-        <Text style={styles.text}>📅 Date: {new Date(item.washDate).toLocaleDateString()}</Text>
-        <Text style={styles.text}>🧽 Interior: {item.interiorCleaned ? 'Yes' : 'No'}</Text>
-        <Text style={styles.text}>🚿 Exterior: {item.exteriorCleaned ? 'Yes' : 'No'}</Text>
-        {item.notes ? <Text style={styles.text}>📝 Notes: {item.notes}</Text> : null}
-        <Text style={styles.text}>
-          📌 Status: {item.status === 0 ? '⏳ Väntar' : item.status === 1 ? '✔️ Klar' : '❌ Misslyckades'}
-        </Text>
-      </View>
-    </Swipeable>
-  );
-  
-
-  if (loading) {
-    return <ActivityIndicator size="large" color="#007AFF" />;
-  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Wash Records</Text>
-       <TouchableOpacity
-            style={styles.addButton}      
-            onPress={() => navigation.navigate('AddWashRecord')}      >
-            <Text style={styles.navigateButtonText}>Lägg till ny tvätt</Text>
-      </TouchableOpacity>
+      <Text style={styles.header}>Tvättschema</Text>
+      <TouchableOpacity
+      style={styles.addButton}
+      onPress={() => navigation.navigate('AddWashRecord')}
+    >
+      <Text style={styles.addButtonText}>Lägg till ny tvätt</Text>
+    </TouchableOpacity>
+
+      <Picker
+      selectedValue={selectedMonth}
+      onValueChange={(val) => {
+        setSelectedMonth(val);
+        fetchData(); 
+      }}
+      style={styles.picker}
+    >
+        {monthsList.map((m) => (
+          <Picker.Item key={m.value} label={m.label} value={m.value} />
+        ))}
+      </Picker>
+
+      <Text style={styles.subHeader}>✅ Utförda</Text>
       <FlatList
-        data={records}
+        data={completed}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
+        renderItem={({ item }: { item: WashCompany }) => renderCompany(item)}
+      />
+
+      <Text style={styles.subHeader}>❌ Ej Klar</Text>
+      <FlatList
+        data={notCompleted}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }: { item: WashCompany }) => renderCompany(item, false)}
       />
     </View>
   );
 };
 
-export default WashRecordsScreen;
+export default WashScheduleScreen;
+
+const getCurrentMonth = () => {
+  const now = new Date();
+  return now.toISOString().slice(0, 7); // YYYY-MM
+};
+
+const generateMonths = (count = 12) => {
+  const months: { label: string; value: string }[] = [];
+  const now = new Date();
+
+  for (let i = 0; i < count; i++) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const label = capitalize(
+      date.toLocaleString('sv-SE', { year: 'numeric', month: 'long' }) //  "april 2025"
+    );
+    const value = date.toISOString().slice(0, 7); //  "2025-04"
+    months.push({ label, value });
+  }
+
+  return months;
+};
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f9f9f9',
-  },
-  
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
+  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
+  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
+  subHeader: { fontSize: 18, fontWeight: '600', marginTop: 16 },
+  picker: { backgroundColor: '#fff', borderRadius: 8, marginVertical: 10 },
   card: {
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    elevation: 3,
+    padding: 14,
+    borderRadius: 10,
+    marginVertical: 8,
+    elevation: 2,
   },
-  text: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  navigateButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
+  companyName: { fontSize: 16, fontWeight: 'bold' },
+  carDetails: { marginTop: 8, marginLeft: 10 },
+  carPlate: { fontWeight: 'bold' },
   addButton: {
-    backgroundColor: '#4CAF50',  
-    paddingVertical: 8,
-    paddingHorizontal: 20,
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderRadius: 8,
-    marginBottom: 10,  
-    alignSelf: 'flex-end', 
+    marginBottom: 12,
+    alignSelf: 'flex-end',
   },
   addButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    // textAlign: 'center',
-    fontSize: 15, 
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  editButton: {
-    backgroundColor: '#FFD700',
-    padding: 15,
-    borderRadius: 5,
-    marginRight: 5,
-  },
-  deleteButton: {
-    backgroundColor: '#FF3B30',
-    padding: 15,
-    borderRadius: 5,
-  },
-  actionText: {
-    color: 'white',
-    fontWeight: 'bold',
+    fontSize: 16,
   },
   
 });

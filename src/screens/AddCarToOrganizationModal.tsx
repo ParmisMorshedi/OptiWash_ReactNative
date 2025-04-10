@@ -42,13 +42,17 @@ const AddCarToOrganizationModal = ({ visible, onClose, organization }: Props) =>
       Alert.alert('Något gick fel.');
     }
   };
-
+  const availableCars = cars.filter(
+    (car) => !organization.carPlateNumbers.includes(car.plateNumber)
+  );
+  
   return (
     <Modal visible={visible} animationType="slide">
       <View style={styles.container}>
+        
         <Text style={styles.header}>Välj en bil till {organization.name}</Text>
         <FlatList
-          data={cars}
+          data={availableCars}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleAddCar(item.id)} style={styles.card}>
