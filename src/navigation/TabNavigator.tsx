@@ -25,7 +25,6 @@ export default function TabNavigator() {
       <Tab.Screen name="Bil" component={CarsStack} />
       <Tab.Screen name="Tvättschema" component={WashRecordStack} /> 
       <Tab.Screen name="Organisationer" component={OrganizationStack} />
-      <Tab.Screen name="Ny Organisation" component={AddOrganizationsScreen} />
     </Tab.Navigator>
   );
 }

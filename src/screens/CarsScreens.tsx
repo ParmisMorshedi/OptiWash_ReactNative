@@ -96,13 +96,6 @@ const openDeleteModal = (id: number, plate: string) => {
     <View style={styles.container}>
       <Text style={styles.title}>Bil listor</Text>
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate('AddCar')}
-      >
-        <Text style={styles.addButtonText}>+ Lägg till ny bil</Text>
-      </TouchableOpacity>
-
       <FlatList
         data={cars}
         keyExtractor={(item) => item.id.toString()}
@@ -128,6 +121,12 @@ const openDeleteModal = (id: number, plate: string) => {
           onDeleted={fetchCars}
         />
       )}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddCar')}
+      >
+        <Text style={styles.addButtonText}>+ Lägg till ny bil</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -149,9 +148,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 8,
-    marginBottom: 10,
-    alignSelf: 'flex-end',
+    marginTop: 10,
+    alignSelf: 'center',
   },
+  
   addButtonText: {
     color: 'white',
     fontWeight: 'bold',

@@ -24,6 +24,8 @@ export type RootStackParamList = {
     WashRecords: undefined;
     AddWashRecord: { carId?: number };
     EditWashRecord: { washRecordId: number };
+    DeleteWashRecord: { carId: number; plateNumber: string };
+
   };
   export type OrganizationStackParamList  = {
     Organizations: undefined;
@@ -34,4 +36,5 @@ export type RootStackParamList = {
     };
     EditOrganization: { orgId: number }; 
   };
+
   

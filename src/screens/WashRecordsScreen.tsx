@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import API_URL from '../../config';
-import { useNavigation } from '@react-navigation/native';
 
 type WashCar = {
+  id: number; 
   plateNumber: string;
   interior: boolean;
   exterior: boolean;
@@ -25,7 +25,7 @@ const WashScheduleScreen = () => {
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
   const [completed, setCompleted] = useState<WashCompany[]>([]);
   const [notCompleted, setNotCompleted] = useState<WashCompany[]>([]);
-  const monthsList = generateMonths(12); 
+  const monthsList = generateMonths(12);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -35,14 +35,11 @@ const WashScheduleScreen = () => {
 
   const fetchData = async () => {
     try {
-      setCompleted([]);      
+      setCompleted([]);
       setNotCompleted([]);
-
       const res = await fetch(`${API_URL}/WashRecords/monthly?month=${selectedMonth}`);
       const data = await res.json();
-
-      console.log("📅 Month fetched:", selectedMonth, data);
-
+      console.log('📅 Month fetched:', selectedMonth, data);
       setCompleted(data.completed);
       setNotCompleted(data.notCompleted);
     } catch (err) {
@@ -56,65 +53,69 @@ const WashScheduleScreen = () => {
       <Text>
         🧼 Typ: {car.interior ? 'Invändig' : ''}{car.interior && car.exterior ? ' & ' : ''}{car.exterior ? 'Utvändig' : ''}
       </Text>
-      <Text>📌 Status: {car.status}</Text>
       {car.note && <Text>📝 {car.note}</Text>}
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('DeleteWashRecord', {
+            carId: car.id,
+            plateNumber: car.plateNumber,
+            month: selectedMonth,
+          })
+        }
+      >
+        <Text style={styles.carPlate}>🗑 Ta bort</Text>
+      </TouchableOpacity>
     </View>
   );
-  
-  const renderCompany = (item: WashCompany, done: boolean = true) => (
-    <View style={styles.card}>      
-      <TouchableOpacity>        
-        <Text style={styles.companyName}>🏢 {item.name}</Text>
-        <Text>📍 {item.city}</Text>
-        <Text>🚗 {item.cars.length} bilar</Text>
-        {item.cars.map((car, index) => (
+
+  const renderCompany = (item: WashCompany) => (
+    <View style={styles.card}>
+      <Text style={styles.companyName}>🏢 {item.name}</Text>
+      <Text>📍 {item.city}</Text>
+      <Text>🚗 {item.cars.length} bilar</Text>
+      {item.cars.map((car, index) => (
         <View key={`${car.plateNumber}-${index}`}>
           {renderCarDetails(car, index)}
         </View>
       ))}
-
-        
-      </TouchableOpacity>
     </View>
   );
-  
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Tvättschema</Text>
-      <TouchableOpacity
-      style={styles.addButton}
-      onPress={() => navigation.navigate('AddWashRecord')}
-    >
-      <Text style={styles.addButtonText}>Lägg till ny tvätt</Text>
-    </TouchableOpacity>
-
       <Picker
-      selectedValue={selectedMonth}
-      onValueChange={(val) => {
-        setSelectedMonth(val);
-        fetchData(); 
-      }}
-      style={styles.picker}
-    >
+        selectedValue={selectedMonth}
+        onValueChange={(val) => {
+          setSelectedMonth(val);
+          fetchData();
+        }}
+        style={styles.picker}
+      >
         {monthsList.map((m) => (
           <Picker.Item key={m.value} label={m.label} value={m.value} />
         ))}
       </Picker>
 
-      <Text style={styles.subHeader}>✅ Utförda</Text>
+      <Text style={styles.subHeader}>✅ Klar</Text>
       <FlatList
         data={completed}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }: { item: WashCompany }) => renderCompany(item)}
+        renderItem={({ item }) => renderCompany(item)}
       />
 
       <Text style={styles.subHeader}>❌ Ej Klar</Text>
       <FlatList
         data={notCompleted}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }: { item: WashCompany }) => renderCompany(item, false)}
+        renderItem={({ item }) => renderCompany(item)}
       />
+
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddWashRecord')}
+      >
+        <Text style={styles.addButtonText}>+ Lägg till ny tvätt</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -132,10 +133,8 @@ const generateMonths = (count = 12) => {
 
   for (let i = 0; i < count; i++) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const label = capitalize(
-      date.toLocaleString('sv-SE', { year: 'numeric', month: 'long' }) //  "april 2025"
-    );
-    const value = date.toISOString().slice(0, 7); //  "2025-04"
+    const label = capitalize(date.toLocaleString('sv-SE', { year: 'numeric', month: 'long' }));
+    const value = date.toISOString().slice(0, 7);
     months.push({ label, value });
   }
 
@@ -146,7 +145,6 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
   subHeader: { fontSize: 18, fontWeight: '600', marginTop: 16 },
   picker: { backgroundColor: '#fff', borderRadius: 8, marginVertical: 10 },
   card: {
@@ -156,21 +154,28 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     elevation: 2,
   },
-  companyName: { fontSize: 16, fontWeight: 'bold' },
-  carDetails: { marginTop: 8, marginLeft: 10 },
-  carPlate: { fontWeight: 'bold' },
+  companyName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  carDetails: {
+    marginTop: 8,
+    marginLeft: 10,
+  },
+  carPlate: {
+    fontWeight: 'bold',
+  },
   addButton: {
     backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
     borderRadius: 8,
-    marginBottom: 12,
-    alignSelf: 'flex-end',
+    marginTop: 10,
+    alignSelf: 'center',
   },
   addButtonText: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 15,
   },
-  
 });

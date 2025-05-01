@@ -103,6 +103,7 @@ const OrganizationsScreen = () => {
         navigation.navigate('OrganizationDetails', {
           id: item.id,
           name: item.name,
+          city: item.location,
           carPlateNumbers: item.carPlateNumbers,
         } as any)
       }
@@ -127,7 +128,6 @@ const OrganizationsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Organisationer</Text>
       <FlatList
         data={organizations}
         keyExtractor={(item) => item.id.toString()}
@@ -140,6 +140,12 @@ const OrganizationsScreen = () => {
     organization={selectedOrg}
   />
 )}
+<TouchableOpacity
+  style={styles.addButton}
+  onPress={() => navigation.navigate('AddOrganization')}
+>
+  <Text style={styles.addButtonText}>+ Lägg till ny organisation</Text>
+</TouchableOpacity>
     </View>
   );
 };
@@ -172,6 +178,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  addButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 10,
+    alignSelf: 'center',
+  },
+  
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  
   actionButtons: {
     flexDirection: 'row',
     backgroundColor: '#f5f5f5',

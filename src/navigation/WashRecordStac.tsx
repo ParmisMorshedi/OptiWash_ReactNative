@@ -3,15 +3,19 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WashRecordsScreen from '../screens/WashRecordsScreen';
 import AddWashRecordScreen from '../screens/AddWashRecordScreen';
 import EditWashRecordScreen from '../screens/EditWashRecordScreen';
+import DeleteWashRecordScreen from '../screens/DeleteWashRecordScreen';
 
 const Stack = createNativeStackNavigator();
 
 const WashRecordStack = () => {
   return (
-    <Stack.Navigator initialRouteName="WashRecords">
-      <Stack.Screen name="WashRecords" component={WashRecordsScreen} />
+    <Stack.Navigator initialRouteName="WashRecords"
+      screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="WashRecords" component={WashRecordsScreen}  />
       <Stack.Screen name="AddWashRecord" component={AddWashRecordScreen} />
       <Stack.Screen name="EditWashRecord" component={EditWashRecordScreen} />
+      <Stack.Screen name="DeleteWashRecord" component={DeleteWashRecordScreen} />
+
 
     </Stack.Navigator>
   );
