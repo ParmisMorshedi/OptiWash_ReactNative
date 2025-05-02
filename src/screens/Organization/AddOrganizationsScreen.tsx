@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import API_URL from '../../config';
+import API_URL from '../../../config';
+import styles from '../../styles/Organization/OrganizationScreen.Styles';
+import { useNavigation } from '@react-navigation/native';
+
 
 const AddOrganizationsScreen = () => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [carPlate, setCarPlate] = useState('');
+  const navigation = useNavigation<any>();
+
 
   const handleSubmit = async () => {
     if (!name || !location || !carPlate) {
@@ -31,6 +36,7 @@ const AddOrganizationsScreen = () => {
         setName('');
         setLocation('');
         setCarPlate('');
+        navigation.goBack(); 
       } else {
         Alert.alert('Fel', 'Kunde inte spara organisationen.');
       }
@@ -73,26 +79,3 @@ const AddOrganizationsScreen = () => {
 };
 
 export default AddOrganizationsScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  label: {
-    marginTop: 15,
-    fontSize: 16,
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 5,
-  },
-});

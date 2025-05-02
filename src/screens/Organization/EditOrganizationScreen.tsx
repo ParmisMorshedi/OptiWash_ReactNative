@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
-import API_URL from '../../config';
+import API_URL from '../../../config';
+import styles from '../../styles/Organization/OrganizationScreen.Styles';
+
 
 type RouteParams = {
   EditOrganization: {
@@ -66,15 +68,3 @@ const EditOrganizationScreen = () => {
 
 export default EditOrganizationScreen;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  label: { fontSize: 16, marginBottom: 5 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-});

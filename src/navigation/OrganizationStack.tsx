@@ -1,9 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AddOrganizationsScreen from '../screens/AddOrganizationsScreen';
-import OrganizationsScreen from '../screens/OrganizationsScreen';
-import OrganizationDetailsScreen from '../screens/OrganizationDetailsScreen';
-import EditOrganizationScreen from '../screens/EditOrganizationScreen';
+import AddOrganizationsScreen from '../screens/Organization/AddOrganizationsScreen';
+import OrganizationsScreen from '../screens/Organization/OrganizationsScreen';
+import OrganizationDetailsScreen from '../screens/Organization/OrganizationDetailsScreen';
+import EditOrganizationScreen from '../screens/Organization/EditOrganizationScreen';
 
 export type OrganizationStackParamList = {
   Organizations: undefined;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, View, Text, Button, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import API_URL from '../../config';
-import { Car } from '../models/Car';
-import { Organization } from '../models/Organization';
-
+import { Modal, View, Text, Button, FlatList, TouchableOpacity, Alert } from 'react-native';
+import API_URL from '../../../config';
+import { Car } from '../../models/Car';
+import { Organization } from '../../models/Organization';
+import styles from '../../styles/Organization/AddCarToOrganizationModal.styles';
 
 interface Props {
   visible: boolean;
@@ -16,9 +16,13 @@ const AddCarToOrganizationModal = ({ visible, onClose, organization }: Props) =>
 
   useEffect(() => {
     const fetchCars = async () => {
-      const res = await fetch(`${API_URL}/Cars`);
-      const data = await res.json();
-      setCars(data);
+      try {
+        const res = await fetch(`${API_URL}/Cars`);
+        const data = await res.json();
+        setCars(data);
+      } catch {
+        Alert.alert('❌ Fel', 'Kunde inte hämta bilar.');
+      }
     };
     fetchCars();
   }, []);
@@ -32,24 +36,23 @@ const AddCarToOrganizationModal = ({ visible, onClose, organization }: Props) =>
       });
 
       if (res.ok) {
-        Alert.alert('Bil tillagd!');
+        Alert.alert('✅ Klart', 'Bil tillagd!');
         onClose();
       } else {
-        Alert.alert('Fel vid tillägg.');
+        Alert.alert('❌ Fel', 'Kunde inte lägga till bilen.');
       }
-    } catch (e) {
-      console.error(e);
-      Alert.alert('Något gick fel.');
+    } catch {
+      Alert.alert('❌ Fel', 'Något gick fel.');
     }
   };
+
   const availableCars = cars.filter(
     (car) => !organization.carPlateNumbers.includes(car.plateNumber)
   );
-  
+
   return (
     <Modal visible={visible} animationType="slide">
       <View style={styles.container}>
-        
         <Text style={styles.header}>Välj en bil till {organization.name}</Text>
         <FlatList
           data={availableCars}
@@ -67,21 +70,3 @@ const AddCarToOrganizationModal = ({ visible, onClose, organization }: Props) =>
 };
 
 export default AddCarToOrganizationModal;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  card: {
-    padding: 15,
-    backgroundColor: '#eee',
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-});
