@@ -1,9 +1,9 @@
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import CarsScreen from '../screens/CarsScreens';
-import AddCarScreen from '../screens/AddCarsScreens';
+import CarsScreen from '../screens/Car/CarsScreens';
+import AddCarScreen from '../screens/Car/AddCarsScreens';
 import AddWashRecordFromCarScreen from '../screens/AddWashRecordFromCarScreen';
-import EditCarScreen from '../screens/EditCarScreen';
+import EditCarScreen from '../screens/Car/EditCarScreen';
 import { CarsStackParamList } from '../navigation/types'; 
 import EditWashRecordScreen from '../screens/EditWashRecordScreen';
 

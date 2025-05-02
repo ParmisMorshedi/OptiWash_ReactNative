@@ -4,20 +4,26 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Alert
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { login } from './authService';
+import styles from '../styles/Auth/LoginScreen.styles';
 
 const LoginScreen = ({ navigation }: any) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    setLoading(true);
     const result = await login(username, password);
+    setLoading(false);
+
     if (result.success) {
+      // Token hanteras av RootNavigator
     } else {
-      Alert.alert('Login misslyckades', result.message);
+      Alert.alert('Inloggning misslyckades', result.message);
     }
   };
 
@@ -30,6 +36,7 @@ const LoginScreen = ({ navigation }: any) => {
         value={username}
         onChangeText={setUsername}
         style={styles.input}
+        autoCapitalize="none"
       />
       <TextInput
         placeholder="Lösenord"
@@ -39,9 +46,13 @@ const LoginScreen = ({ navigation }: any) => {
         style={styles.input}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Logga in</Text>
-      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#44bd32" />
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Logga in</Text>
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.link}>Har du inget konto? Registrera dig</Text>
@@ -49,45 +60,5 @@ const LoginScreen = ({ navigation }: any) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f6fa',
-    justifyContent: 'center',
-    paddingHorizontal: 30
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
-    color: '#2f3640'
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#dcdde1'
-  },
-  button: {
-    backgroundColor: '#44bd32',
-    padding: 15,
-    borderRadius: 8,
-    marginTop: 10,
-    alignItems: 'center'
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16
-  },
-  link: {
-    marginTop: 20,
-    textAlign: 'center',
-    color: '#487eb0'
-  }
-});
 
 export default LoginScreen;

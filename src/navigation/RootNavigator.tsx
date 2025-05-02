@@ -5,26 +5,23 @@ import AuthStack from './AuthStack';
 import TabNavigator from './TabNavigator';
 import { navigationRef } from './navigationRef';
 
-
 export default function RootNavigator() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkToken = async () => {
       const token = await AsyncStorage.getItem('authToken');
-      console.log("TOKEN CHECK:", token);
       setIsLoggedIn(!!token);
     };
-  
-    const interval = setInterval(checkToken, 1000); 
-  
+
+    const interval = setInterval(checkToken, 1000);
+
     return () => clearInterval(interval);
   }, []);
-  
+
   return (
-    <NavigationContainer ref={navigationRef}> 
+    <NavigationContainer ref={navigationRef}>
       {isLoggedIn ? <TabNavigator /> : <AuthStack />}
     </NavigationContainer>
   );
-  
 }

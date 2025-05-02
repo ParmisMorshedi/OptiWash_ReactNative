@@ -74,5 +74,23 @@ export default StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
       },
+      //Add/Edit/Delete Car Style
+      label: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#1E293B',
+        marginBottom: 6,
+        marginTop: 12,
+      },
+      
+      input: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: '#CBD5E1',
+        marginBottom: 10,
+      },
+      
     
 });
