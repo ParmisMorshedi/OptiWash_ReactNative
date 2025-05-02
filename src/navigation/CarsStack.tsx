@@ -8,7 +8,6 @@ import { CarsStackParamList } from '../navigation/types';
 import EditWashRecordScreen from '../screens/EditWashRecordScreen';
 
 
-
 const Stack = createNativeStackNavigator<CarsStackParamList>();
 
 export default function CarsStack() {

@@ -13,6 +13,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import API_URL from '../../config';
 import { Car } from '../models/Car';
 import DeleteCarModal from './DeleteCarModal';
+import styles from '../styles/CarScreen.styles';
 
 const CarsScreen = () => {
   const [cars, setCars] = useState<Car[]>([]);
@@ -99,6 +100,7 @@ const openDeleteModal = (id: number, plate: string) => {
       <FlatList
         data={cars}
         keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{ paddingBottom: 100 }}
         renderItem={({ item }) => (
           <Swipeable renderRightActions={() => renderRightActions(item)}>
             <TouchableOpacity
@@ -106,7 +108,7 @@ const openDeleteModal = (id: number, plate: string) => {
             style={styles.card}
           >
               <Text style={styles.text}>🚗 Plate: {item.plateNumber}</Text>
-              <Text style={styles.text}>📸 Scanned: {item.scannedLicensePlate || 'N/A'}</Text>
+              <Text style={[styles.text, !item.scannedLicensePlate && { color: '#aaa' }]}>📸 {item.scannedLicensePlate || 'Ej skannad'} </Text>         
             </TouchableOpacity>
           </Swipeable>
         )}
@@ -133,62 +135,5 @@ const openDeleteModal = (id: number, plate: string) => {
 
 export default CarsScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  addButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginTop: 10,
-    alignSelf: 'center',
-  },
-  
-  addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  card: {
-    backgroundColor: 'white',
-    padding: 15,
-    marginVertical: 8,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  text: {
-    fontSize: 16,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  editButton: {
-    backgroundColor: '#FFD700',
-    padding: 15,
-    borderRadius: 5,
-    marginRight: 5,
-  },
-  deleteButton: {
-    backgroundColor: '#FF3B30',
-    padding: 15,
-    borderRadius: 5,
-  },
-  actionText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-});
+
+ 

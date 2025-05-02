@@ -1,0 +1,78 @@
+import { StyleSheet } from 'react-native';
+
+
+export default StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingTop: 20,
+        backgroundColor: '#F2F4F7',
+      },
+      title: {
+        fontSize: 24,
+        fontWeight: '600',
+        color: '#1E293B',
+        marginBottom: 16,
+        textAlign: 'center',
+      },
+      card: {
+        backgroundColor: '#ffffff',
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOpacity: 0.06,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+        elevation: 2,
+      },
+      text: {
+        fontSize: 16,
+        color: '#334155',
+        marginBottom: 4,
+      },
+      addButton: {
+        position: 'absolute',
+        bottom: 20,
+        left: 16,
+        right: 16,
+        backgroundColor: '#10B981',
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: 'center',
+        shadowColor: '#10B981',
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: 3 },
+        shadowRadius: 6,
+        elevation: 4,
+      },
+      addButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
+      },
+      actionButtons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingRight: 10,
+      },
+      editButton: {
+        backgroundColor: '#FACC15',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        marginRight: 8,
+      },
+      deleteButton: {
+        backgroundColor: '#EF4444',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+      },
+      actionText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: '600',
+      },
+    
+});

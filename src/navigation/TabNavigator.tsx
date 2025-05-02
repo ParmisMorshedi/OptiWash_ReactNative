@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import ProfileScreen from '../auth/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import CarsScreen from '../screens/CarsScreens';
 import CarsStack from './CarsStack';
@@ -12,9 +12,12 @@ import OrganizationDetailsScreen from '../screens/OrganizationDetailsScreen';
 import OrganizationStack from './OrganizationStack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WashRecordStack from './WashRecordStac';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { RootTabParamList } from '../navigation/types';
+type Props = BottomTabScreenProps<RootTabParamList, 'Profile'>;
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export default function TabNavigator() {
   return (
