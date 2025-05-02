@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import API_URL from '../../config';
+import API_URL from '../../../config';
+import styles from '../../styles/WashRecord/WashScreen.styles';
+
 
 type WashCar = {
   id: number; 
@@ -101,6 +103,7 @@ const WashScheduleScreen = () => {
         data={completed}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => renderCompany(item)}
+        contentContainerStyle={{ paddingBottom: 120 }}
       />
 
       <Text style={styles.subHeader}>❌ Ej Klar</Text>
@@ -108,6 +111,7 @@ const WashScheduleScreen = () => {
         data={notCompleted}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => renderCompany(item)}
+        contentContainerStyle={{ paddingBottom: 120 }}
       />
 
       <TouchableOpacity
@@ -143,39 +147,3 @@ const generateMonths = (count = 12) => {
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#f5f5f5' },
-  subHeader: { fontSize: 18, fontWeight: '600', marginTop: 16 },
-  picker: { backgroundColor: '#fff', borderRadius: 8, marginVertical: 10 },
-  card: {
-    backgroundColor: '#fff',
-    padding: 14,
-    borderRadius: 10,
-    marginVertical: 8,
-    elevation: 2,
-  },
-  companyName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  carDetails: {
-    marginTop: 8,
-    marginLeft: 10,
-  },
-  carPlate: {
-    fontWeight: 'bold',
-  },
-  addButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginTop: 10,
-    alignSelf: 'center',
-  },
-  addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-});

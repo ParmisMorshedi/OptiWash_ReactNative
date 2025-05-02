@@ -9,8 +9,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import API_URL from '../../config';
+import API_URL from '../../../config';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import styles from '../../styles/WashRecord/WashScreen.styles';
 
 type WashRecord = {
   id: number;
@@ -129,26 +130,3 @@ const DeleteWashRecordScreen = () => {
 };
 
 export default DeleteWashRecordScreen;
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
-  header: { fontSize: 20, fontWeight: 'bold', marginBottom: 12 },
-  card: {
-    backgroundColor: '#fff',
-    padding: 15,
-    marginVertical: 6,
-    borderRadius: 8,
-  },
-  deleteButton: {
-    backgroundColor: '#FF3B30',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginVertical: 6,
-    borderRadius: 8,
-  },
-  deleteText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-});

@@ -1,9 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import WashRecordsScreen from '../screens/WashRecordsScreen';
-import AddWashRecordScreen from '../screens/AddWashRecordScreen';
-import EditWashRecordScreen from '../screens/EditWashRecordScreen';
-import DeleteWashRecordScreen from '../screens/DeleteWashRecordScreen';
+import WashRecordsScreen from '../screens/WashRecord/WashRecordsScreen';
+import AddWashRecordScreen from '../screens/WashRecord/AddWashRecordScreen';
+import EditWashRecordScreen from '../screens/WashRecord/EditWashRecordScreen';
+import DeleteWashRecordScreen from '../screens/WashRecord/DeleteWashRecordScreen';
 
 const Stack = createNativeStackNavigator();
 

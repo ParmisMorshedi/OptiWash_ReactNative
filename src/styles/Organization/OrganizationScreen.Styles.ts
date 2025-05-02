@@ -29,18 +29,25 @@ export default StyleSheet.create({
     "marginBottom": 12,
     "elevation": 2
   },
-  "addButton": {
-    "backgroundColor": "#4CAF50",
-    "paddingVertical": 8,
-    "paddingHorizontal": 20,
-    "borderRadius": 8,
-    "marginTop": 10,
-    "alignSelf": "center"
+  addButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    backgroundColor: '#10B981',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#10B981',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 4,
   },
-  "addButtonText": {
-    "color": "white",
-    "fontWeight": "bold",
-    "fontSize": 15
+  addButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   "actionButtons": {
     "flexDirection": "row",

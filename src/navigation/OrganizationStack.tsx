@@ -25,7 +25,6 @@ const OrganizationStack = () => {
     <Stack.Navigator>
       <Stack.Screen name="Organizations" component={OrganizationsScreen} options={{ title: 'Organisationer' }} />
       <Stack.Screen name="AddOrganization" component={AddOrganizationsScreen} options={{ title: 'Lägg till organisation' }}/>
-
       <Stack.Screen name="OrganizationDetails" component={OrganizationDetailsScreen} options={{ title: 'Detaljer' }} />
       <Stack.Screen name="EditOrganization" component={EditOrganizationScreen} />
 

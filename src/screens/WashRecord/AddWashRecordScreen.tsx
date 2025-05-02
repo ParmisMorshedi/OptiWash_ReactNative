@@ -1,17 +1,18 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Switch, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Platform, Pressable } from 'react-native';
-import { WashStatus } from '../models/WashRecord';
-import API_URL from '../../config';
-import { Car } from '../models/Car';
+import { WashStatus } from '../../models/WashRecord';
+import API_URL from '../../../config';
+import { Car } from '../../models/Car';
+import { useNavigation } from '@react-navigation/native';
+import styles from '../../styles/WashRecord/WashScreen.styles';
+
 
 
 type Props = {
-  carId?: number; // nullable
+  carId?: number; 
 };
 
 const AddWashRecordScreen = ({ carId }: Props) => {
@@ -23,14 +24,12 @@ const AddWashRecordScreen = ({ carId }: Props) => {
   const [exterior, setExterior] = useState(false);
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState<WashStatus>(WashStatus.Pending);
+  const navigation = useNavigation<any>();
 
-
-      
 const onChangeDate = (event: any, selectedDate?: Date) => {
   setShowDatePicker(Platform.OS === 'ios'); 
   if (selectedDate) setWashDate(selectedDate);
 };
-
 
   // 🔄 Load cars on mount
   useEffect(() => {
@@ -61,7 +60,6 @@ const onChangeDate = (event: any, selectedDate?: Date) => {
       exteriorCleaned: exterior,
       notes: notes,
       status: status,
-
       userId: '8fdbab80-bb3a-4388-b340-0f7f05058421', // tillfälligt
     };
 
@@ -78,6 +76,7 @@ const onChangeDate = (event: any, selectedDate?: Date) => {
         setInterior(false);
         setExterior(false);
         setNotes('');
+        navigation.goBack();
       } else {
         Alert.alert('Fel', 'Kunde inte spara tvätten.');
       }
@@ -158,38 +157,3 @@ const onChangeDate = (event: any, selectedDate?: Date) => {
 
 export default AddWashRecordScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  label: {
-    marginTop: 15,
-    fontSize: 16,
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 5,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 15,
-  },
-  pickerContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginTop: 5,
-  },
-
-  
-});

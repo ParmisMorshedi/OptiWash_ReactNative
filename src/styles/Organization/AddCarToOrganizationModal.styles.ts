@@ -1,4 +1,3 @@
-// src/styles/Car/AddCarToOrganizationModal.styles.ts
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({

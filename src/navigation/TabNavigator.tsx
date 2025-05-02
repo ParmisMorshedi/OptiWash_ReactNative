@@ -5,7 +5,7 @@ import ProfileScreen from '../auth/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import CarsScreen from '../screens/Car/CarsScreens';
 import CarsStack from './CarsStack';
-import WashRecordsScreen from '../screens/WashRecordsScreen'; 
+import WashRecordsScreen from '../screens/WashRecord/WashRecordsScreen'; 
 import OrganizationsScreen from '../screens/Organization/OrganizationsScreen';
 import AddOrganizationsScreen from '../screens/Organization/AddOrganizationsScreen';
 import OrganizationDetailsScreen from '../screens/Organization/OrganizationDetailsScreen';
@@ -14,6 +14,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WashRecordStack from './WashRecordStac';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { RootTabParamList } from '../navigation/types';
+
 type Props = BottomTabScreenProps<RootTabParamList, 'Profile'>;
 
 const Stack = createNativeStackNavigator();

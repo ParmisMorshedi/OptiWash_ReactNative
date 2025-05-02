@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 
-
 export default StyleSheet.create({
     container: {
         flex: 1,
@@ -74,15 +73,14 @@ export default StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
       },
-      //Add/Edit/Delete Car Style
+      //Add/Edit Car Style
       label: {
         fontSize: 16,
         fontWeight: '500',
         color: '#1E293B',
         marginBottom: 6,
         marginTop: 12,
-      },
-      
+      },      
       input: {
         backgroundColor: '#fff',
         borderRadius: 8,
@@ -90,7 +88,5 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderColor: '#CBD5E1',
         marginBottom: 10,
-      },
-      
-    
+      },   
 });
