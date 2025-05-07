@@ -1,9 +1,11 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API_URL from '../../config';
+import { Alert } from 'react-native';
 export const login = async (username: string, password: string) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, { username, password });
+
     const { token, fullName, isAdmin } = response.data;
 
     await AsyncStorage.setItem('authToken', token);
@@ -11,10 +13,17 @@ export const login = async (username: string, password: string) => {
     await AsyncStorage.setItem('isAdmin', isAdmin.toString());
 
     return { success: true };
-  } catch {
-    return { success: false, message: 'Invalid credentials' };
+  } catch (err: any) {
+    const msg =
+      err?.response?.data?.message ||
+      JSON.stringify(err?.response?.data) ||
+      err?.message ||
+      'Unknown error';
+    Alert.alert('Login error', msg);
+    return { success: false, message: msg };
   }
 };
+
 
 export const register = async (form: {
   username: string;
