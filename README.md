@@ -1,4 +1,4 @@
-This is a new [**React Native**](https://reactnative.dev) project.
+This is a  [**React Native**](https://reactnative.dev) project.
 
 # Getting Started
 
